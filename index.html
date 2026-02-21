@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QLab Sync Monitor</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="summary-bar">
+        <section id="statusSummary" class="summary neutral">Waiting…</section>
+        <button id="settingsToggle" class="ghost-btn" type="button" aria-expanded="false" aria-controls="settingsPanel">
+          Settings
+        </button>
+      </section>
+
+      <section id="buttonsContainer" class="buttons" aria-live="polite"></section>
+
+      <section id="settingsPanel" class="settings hidden" aria-hidden="true">
+        <h2>Settings</h2>
+
+        <form id="settingsForm">
+          <label>
+            Companion URL
+            <input id="companionUrl" name="companionUrl" type="url" placeholder="http://127.0.0.1:8000" required />
+          </label>
+
+          <label>
+            Poll interval (ms)
+            <input id="pollIntervalMs" name="pollIntervalMs" type="number" min="250" step="50" required />
+            <small id="pollIntervalWarning" class="field-warning hidden" aria-live="polite">
+              1000ms is highly recommended. Other values can lead to unexpected behaviour.
+            </small>
+          </label>
+
+          <label>
+            e_time tolerance (seconds)
+            <input id="eTimeToleranceSeconds" name="eTimeToleranceSeconds" type="number" min="0" step="0.01" required />
+          </label>
+
+          <label>
+            QLab connection label 1 (required)
+            <input id="connectionLabel1" name="connectionLabel1" type="text" placeholder="qlabfb" required />
+          </label>
+
+          <label>
+            QLab connection label 2 (required)
+            <input id="connectionLabel2" name="connectionLabel2" type="text" placeholder="qlabfb-backup" required />
+          </label>
+
+          <label>
+            QLab connection label 3 (optional)
+            <input id="connectionLabel3" name="connectionLabel3" type="text" placeholder="qlabfb-third" />
+          </label>
+
+          <fieldset>
+            <legend>Variables to compare</legend>
+            <div id="variableOptions" class="variable-options" aria-live="polite"></div>
+            <small class="variable-help">Use ↑ and ↓ to reorder. This order is used on the main page.</small>
+          </fieldset>
+
+          <div class="actions">
+            <button type="submit" class="primary-btn">Save</button>
+          </div>
+
+          <div class="settings-logo-wrap">
+            <img
+              class="settings-logo"
+              src="https://www.desertdog.nl/images/logo/logo_full_white.png"
+              alt="Desert Dog logo"
+            />
+          </div>
+
+          <div class="settings-coffee-wrap">
+            <a class="settings-coffee-link" href="https://www.buymeacoffee.com/desertdog" target="_blank" rel="noopener noreferrer">
+              <img class="settings-coffee-img" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" />
+            </a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
