@@ -1,6 +1,6 @@
 {
   "name": "qlab-sync-monitor",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "private": true,
   "description": "Small webpage to compare QLab Companion variables across multiple connections",
   "main": "main.js",
@@ -19,7 +19,8 @@
     "appId": "nl.desertdog.qlabsyncmonitor",
     "productName": "QLab Sync Monitor",
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "build"
     },
     "files": [
       "index.html",
@@ -32,12 +33,14 @@
       "target": [
         "dmg"
       ],
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "icon": "build/icon.icns"
     },
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,

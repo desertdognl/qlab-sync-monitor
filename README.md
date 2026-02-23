@@ -34,6 +34,13 @@ npm run dist:win
 
 - Output files are written to `dist/`.
 
+## App icon
+
+- macOS installer/app icon: `build/icon.icns`
+- Windows installer/app icon: `build/icon.ico`
+- Source artwork: `build/icon.png`
+- Replace these files with your own icon files (same names) to change branding.
+
 ## Notes
 
 - This app reads Companion module variables via:

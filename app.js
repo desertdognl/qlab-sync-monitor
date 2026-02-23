@@ -1,4 +1,6 @@
 const STORAGE_KEY = 'qlab-sync-monitor-settings-v1'
+const SHEET_NAME = 'QLab Sync Monitor'
+const VERSION_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1sAWjSpoLeFVKM9SK5ZqAko6T9nR9Vu2ZtmOLm4f_k0w/gviz/tq?tqx=out:csv'
 
 const ALL_VARIABLES = [
   { id: 'e_time', titlePrefix: 'Time elapsed:', settingLabel: 'Running time elapsed (`e_time`)' },
@@ -26,6 +28,8 @@ const ui = {
   variableOptions: document.getElementById('variableOptions'),
   summary: document.getElementById('statusSummary'),
   buttonsContainer: document.getElementById('buttonsContainer'),
+  appVersion: document.getElementById('appVersion'),
+  versionIndicator: document.getElementById('versionIndicator'),
 }
 
 let settings = loadSettings()
@@ -54,6 +58,7 @@ ui.variableOptions.addEventListener('click', (event) => {
 syncFormWithSettings(settings)
 renderLoadingState()
 startPolling()
+initializeVersionStatus()
 
 ui.settingsToggle.addEventListener('click', () => {
   const isHidden = ui.settingsPanel.classList.contains('hidden')
@@ -421,4 +426,175 @@ function escapeHtml(text) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;')
+}
+
+async function initializeVersionStatus() {
+  const currentVersion = await getCurrentAppVersion()
+  if (ui.appVersion) {
+    ui.appVersion.textContent = `v${currentVersion}`
+  }
+
+  if (ui.versionIndicator) {
+    ui.versionIndicator.textContent = ''
+  }
+
+  const checkResult = await checkForUpdatedVersion(currentVersion)
+
+  if (!ui.versionIndicator) return
+
+  if (checkResult.status === 'update' && checkResult.url) {
+    const updateLink = document.createElement('a')
+    updateLink.className = 'version-update-link'
+    updateLink.textContent = 'updated version available'
+    updateLink.href = checkResult.url
+    updateLink.target = '_blank'
+    updateLink.rel = 'noopener noreferrer'
+
+    ui.versionIndicator.textContent = ''
+    ui.versionIndicator.appendChild(updateLink)
+    return
+  }
+
+  if (checkResult.status === 'error') {
+    const errorMark = document.createElement('span')
+    errorMark.className = 'version-error'
+    errorMark.textContent = '!'
+    errorMark.title = 'Could not check for updates'
+
+    ui.versionIndicator.textContent = ''
+    ui.versionIndicator.appendChild(errorMark)
+  }
+}
+
+async function getCurrentAppVersion() {
+  try {
+    const response = await fetch('./package.json', { cache: 'no-store' })
+    if (!response.ok) {
+      return '0.0.0'
+    }
+
+    const packageJson = await response.json()
+    const version = typeof packageJson.version === 'string' ? packageJson.version.trim() : ''
+    return version || '0.0.0'
+  } catch {
+    return '0.0.0'
+  }
+}
+
+async function checkForUpdatedVersion(currentVersion) {
+  try {
+    const response = await fetch(VERSION_SHEET_CSV_URL, { cache: 'no-store' })
+    if (!response.ok) {
+      return { status: 'error' }
+    }
+
+    const csvText = await response.text()
+    const rows = parseCsv(csvText)
+
+    const matchingRow = rows.find((row) => String(row[0] || '').trim() === SHEET_NAME)
+    if (!matchingRow) {
+      return { status: 'none' }
+    }
+
+    const sheetVersion = String(matchingRow[1] || '').trim()
+    const sheetUrl = sanitizeHttpUrl(String(matchingRow[2] || '').trim())
+
+    if (sheetVersion && compareVersions(sheetVersion, currentVersion) > 0) {
+      return { status: 'update', url: sheetUrl }
+    }
+
+    return { status: 'none' }
+  } catch {
+    return { status: 'error' }
+  }
+}
+
+function sanitizeHttpUrl(value) {
+  try {
+    const parsed = new URL(value)
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return parsed.toString()
+    }
+    return ''
+  } catch {
+    return ''
+  }
+}
+
+function compareVersions(left, right) {
+  const leftParts = normalizeVersionParts(left)
+  const rightParts = normalizeVersionParts(right)
+  const length = Math.max(leftParts.length, rightParts.length)
+
+  for (let index = 0; index < length; index += 1) {
+    const a = leftParts[index] || 0
+    const b = rightParts[index] || 0
+    if (a > b) return 1
+    if (a < b) return -1
+  }
+
+  return 0
+}
+
+function normalizeVersionParts(version) {
+  const cleaned = String(version || '')
+    .trim()
+    .replace(/^v/i, '')
+    .split('-')[0]
+
+  if (!cleaned) return [0]
+
+  return cleaned.split('.').map((part) => {
+    const numeric = Number.parseInt(part, 10)
+    return Number.isFinite(numeric) ? numeric : 0
+  })
+}
+
+function parseCsv(content) {
+  const rows = []
+  let row = []
+  let cell = ''
+  let inQuotes = false
+
+  for (let index = 0; index < content.length; index += 1) {
+    const char = content[index]
+    const nextChar = content[index + 1]
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        cell += '"'
+        index += 1
+      } else {
+        inQuotes = !inQuotes
+      }
+      continue
+    }
+
+    if (char === ',' && !inQuotes) {
+      row.push(cell)
+      cell = ''
+      continue
+    }
+
+    if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && nextChar === '\n') {
+        index += 1
+      }
+
+      row.push(cell)
+      rows.push(row)
+      row = []
+      cell = ''
+      continue
+    }
+
+    cell += char
+  }
+
+  if (cell.length || row.length) {
+    row.push(cell)
+    rows.push(row)
+  }
+
+  return rows
 }

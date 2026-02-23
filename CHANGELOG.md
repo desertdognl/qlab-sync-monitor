@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.2.2] - 2026-02-23
+### Added
+- Added startup app-version check:
+    - Shows `updated version available` next to bottom-right version when a newer version exists and links to repository.
+
+### Release
+- [x] Built fresh macOS installer: `dist/QLab Sync Monitor-0.2.2-arm64.dmg`
+- [x] Built fresh Windows installer: `dist/QLab Sync Monitor Setup 0.2.2.exe`
+- [x] Cleaned `dist/` so installer files remain only
+
+## [0.2.1] - 2026-02-23
+### Changed
+- Replaced generic Electron app icon with a custom QLab Sync Monitor icon.
+- Configured `electron-builder` to use platform-specific icons:
+  - macOS: `build/icon.icns`
+  - Windows: `build/icon.ico`
+
 ## [0.2.0] - 2026-02-21
 ### Added
 - Added desktop app packaging with Electron.

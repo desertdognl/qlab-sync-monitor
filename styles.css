@@ -317,3 +317,44 @@ fieldset {
   width: 50%;
   height: auto;
 }
+
+.app-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 20px;
+}
+
+.version-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.66rem;
+  color: #9aa6b2;
+}
+
+.version-text {
+  color: #9aa6b2;
+}
+
+.version-indicator {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1em;
+}
+
+.version-update-link {
+  color: #f59e0b;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.version-update-link:hover {
+  color: #fbbf24;
+}
+
+.version-error {
+  color: #ef4444;
+  font-weight: 700;
+  line-height: 1;
+}
