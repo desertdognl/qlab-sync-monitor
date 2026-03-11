@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.2.3] - 2026-03-11
+### Changed
+- Corrected Electron build icon usage to read from `build/icons/` for both platforms:
+  - macOS: `build/icons/icon.icns`
+  - Windows: `build/icons/icon.ico`
+- Updated release scripts:
+  - `npm run dist:mac` builds DMG output.
+  - `npm run dist:win` builds NSIS installer EXE and automatically creates final Windows ZIP with installer + README.
+  - `npm run clean:dist:final` keeps only the current-version DMG and Windows final ZIP in `dist/`.
+
+### Added
+- Added install instruction files:
+  - `build/README-INSTALL-MAC.txt`
+  - `build/README-INSTALL-WINDOWS.txt`
+- Added DMG content entry so macOS release includes `README-INSTALL-MAC.txt` in the DMG root.
+- Added Windows final packaging step so ZIP includes:
+  - `Setup <version>.exe`
+  - `README-INSTALL-WINDOWS.txt`
+
 ## [0.2.2] - 2026-02-23
 ### Added
 - Added startup app-version check:

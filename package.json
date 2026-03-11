@@ -1,6 +1,6 @@
 {
   "name": "qlab-sync-monitor",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
   "description": "Small webpage to compare QLab Companion variables across multiple connections",
   "main": "main.js",
@@ -9,7 +9,8 @@
     "desktop": "electron .",
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac dmg",
-    "dist:win": "electron-builder --win nsis"
+    "dist:win": "electron-builder --win nsis && node scripts/package-win-final.mjs",
+    "clean:dist:final": "node scripts/clean-dist-final.mjs"
   },
   "devDependencies": {
     "electron": "^33.2.1",
@@ -34,13 +35,34 @@
         "dmg"
       ],
       "category": "public.app-category.utilities",
-      "icon": "build/icon.icns"
+      "icon": "build/icons/icon.icns"
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "build/icon.ico"
+      "icon": "build/icons/icon.ico"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220,
+          "type": "file"
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 360,
+          "type": "file",
+          "path": "build/README-INSTALL-MAC.txt"
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
